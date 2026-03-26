@@ -86,12 +86,13 @@ def add_cameras(args: lu.ArgumentContainer) -> List:
         serial_numbers = serial_numbers_str.split(',')
 
     num_cameras = int(args.num_cameras)
+    use_splitter = lu.is_true(args.use_splitter)
     actions = []
 
     for idx in range(num_cameras):
         camera_name = f'camera{idx}'
-        # Only camera0 uses the splitter (emitter flashing)
-        run_splitter = (idx == 0)
+        # camera0 uses splitter (emitter flashing) only if use_splitter is True
+        run_splitter = (idx == 0) and use_splitter
         config = EMITTER_FLASHING_CONFIG if run_splitter else EMITTER_ON_CONFIG
         serial = serial_numbers[idx] if idx < len(serial_numbers) else None
 
@@ -118,6 +119,8 @@ def generate_launch_description() -> LaunchDescription:
     args.add_arg('camera_serial_numbers', '',
                  description='Comma-separated serial numbers (empty = auto-detect first).')
     args.add_arg('num_cameras', 1)
+    args.add_arg('use_splitter', 'True',
+                 description='Use realsense_splitter for emitter on/off separation.')
 
     args.add_opaque_function(add_cameras)
     actions = args.get_launch_actions()
