@@ -82,11 +82,12 @@ def _get_nvblox_remappings(mode: NvbloxMode, use_splitter: bool):
             ('camera_0/mask/camera_info', '/camera0/segmentation/camera_info_resized'),
         ])
     elif mode is NvbloxMode.people_detection:
+        # Use resized color (640x480) to match detection mask resolution
         remappings.extend([
-            ('camera_0/color/image', '/camera0/color/image_raw'),
-            ('camera_0/color/camera_info', '/camera0/color/camera_info'),
+            ('camera_0/color/image', '/camera0/detection/image_resized'),
+            ('camera_0/color/camera_info', '/camera0/detection/camera_info_resized'),
             ('camera_0/mask/image', '/camera0/detection/people_mask'),
-            ('camera_0/mask/camera_info', '/camera0/color/camera_info'),
+            ('camera_0/mask/camera_info', '/camera0/detection/camera_info_resized'),
         ])
     else:
         remappings.extend([
@@ -167,9 +168,9 @@ def add_perception_stack(args: lu.ArgumentContainer) -> List[Action]:
     actions.append(TimerAction(period=1.0, actions=[
         lu.load_composable_nodes(args.container_name, [vslam_node])]))
 
-    # --- People segmentation pipeline ---
+    # --- People segmentation pipeline (delayed 10s for camera init) ---
     if mode is NvbloxMode.people_segmentation:
-        actions.append(lu.include(
+        actions.append(TimerAction(period=10.0, actions=[lu.include(
             'nvblox_examples_bringup',
             'launch/perception/segmentation.launch.py',
             launch_arguments={
@@ -183,20 +184,43 @@ def add_perception_stack(args: lu.ArgumentContainer) -> List[Action]:
                     '/camera0/segmentation/camera_info_resized'],
                 'num_cameras': '1',
                 'one_container_per_camera': 'True',
-            }))
+            })]))
 
-    # --- People detection pipeline ---
+    # --- People detection pipeline (delayed 10s for camera init) ---
+    # D456 outputs 848x480 but PeopleNet expects 640x480 → add resize node
     if mode is NvbloxMode.people_detection:
-        actions.append(lu.include(
+        detection_resize_node = ComposableNode(
+            name='detection_resize_node',
+            package='isaac_ros_image_proc',
+            plugin='nvidia::isaac_ros::image_proc::ResizeNode',
+            namespace='camera0',
+            parameters=[{
+                'output_width': 640,
+                'output_height': 480,
+                'keep_aspect_ratio': False,
+                'input_qos': 'SENSOR_DATA',
+            }],
+            remappings=[
+                ('image', '/camera0/color/image_raw'),
+                ('camera_info', '/camera0/color/camera_info'),
+                ('resize/image', '/camera0/detection/image_resized'),
+                ('resize/camera_info', '/camera0/detection/camera_info_resized'),
+            ])
+        actions.append(lu.load_composable_nodes(
+            args.container_name, [detection_resize_node]))
+
+        actions.append(TimerAction(period=10.0, actions=[lu.include(
             'nvblox_examples_bringup',
             'launch/perception/detection.launch.py',
             launch_arguments={
                 'namespace_list': ['camera0'],
-                'input_topic_list': ['/camera0/color/image_raw'],
+                'input_topic_list': ['/camera0/detection/image_resized'],
                 'num_cameras': '1',
                 'container_name': args.container_name,
                 'one_container_per_camera': 'True',
-            }))
+                'network_image_width': '640',
+                'network_image_height': '480',
+            })]))
 
     # --- NvBlox ---
     nvblox_remappings = _get_nvblox_remappings(mode, use_splitter)
