@@ -238,6 +238,48 @@ Visualization Manager:
             Reliability Policy: Best Effort
             Value: /camera0/color/image_raw
           Value: true
+        - Class: rviz_default_plugins/Image
+          Enabled: true
+          Max Value: 1
+          Median window: 5
+          Min Value: 0
+          Name: People Mask
+          Normalize Range: true
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            History Policy: Keep Last
+            Reliability Policy: Reliable
+            Value: /camera0/detection/people_mask
+          Value: true
+        - Class: rviz_default_plugins/Image
+          Enabled: true
+          Max Value: 1
+          Median window: 5
+          Min Value: 0
+          Name: Segmentation Mask
+          Normalize Range: true
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            History Policy: Keep Last
+            Reliability Policy: Reliable
+            Value: /camera0/unet/colored_segmentation_mask
+          Value: true
+        - Class: rviz_default_plugins/Image
+          Enabled: true
+          Max Value: 1
+          Median window: 5
+          Min Value: 0
+          Name: Dynamic Overlay
+          Normalize Range: true
+          Topic:
+            Depth: 5
+            Durability Policy: Volatile
+            History Policy: Keep Last
+            Reliability Policy: Best Effort
+            Value: /nvblox_node/dynamic_depth_frame_overlay
+          Value: true
       Enabled: true
       Name: Sensors
     - Class: rviz_default_plugins/Axes
@@ -317,6 +359,12 @@ Window Geometry:
   Depth Image:
     collapsed: false
   Color Image:
+    collapsed: false
+  People Mask:
+    collapsed: false
+  Segmentation Mask:
+    collapsed: false
+  Dynamic Overlay:
     collapsed: false
   Displays:
     collapsed: false
