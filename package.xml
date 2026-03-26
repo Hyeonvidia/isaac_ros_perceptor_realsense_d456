@@ -28,6 +28,11 @@
   <exec_depend>nvblox_ros</exec_depend>
   <exec_depend>isaac_ros_visual_slam</exec_depend>
 
+  <!-- DNN inference (people segmentation / detection modes)
+       Runtime deps installed via apt: ros-humble-isaac-ros-unet,
+       ros-humble-isaac-ros-tensor-rt, ros-humble-isaac-ros-tensor-proc,
+       ros-humble-isaac-ros-image-proc -->
+
   <!-- Visualization -->
   <exec_depend>rviz2</exec_depend>
   <exec_depend>nvblox_rviz_plugin</exec_depend>
