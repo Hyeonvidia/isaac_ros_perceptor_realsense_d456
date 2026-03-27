@@ -1,15 +1,36 @@
 /**:
   ros__parameters:
+    # Image settings
     rectified_images: true
-    enable_localization_n_mapping: true
+    enable_rectified_pose: true
+    enable_image_denoising: false
+
+    # SLAM settings
+    enable_localization_n_mapping: false
     enable_imu_fusion: false
+
+    # TF publishing
     publish_odom_to_base_tf: true
     publish_map_to_odom_tf: true
-    verbosity: 999
-    enable_ground_constraint_in_odometry: true
-    enable_ground_constraint_in_slam: true
-    path_max_size: 2000
-    enable_verbosity: true
+
+    # Ground constraint (disabled by default; enable for vehicles)
+    enable_ground_constraint_in_odometry: false
+    enable_ground_constraint_in_slam: false
+
+    # IMU noise parameters (needed even when IMU fusion is off)
+    gyro_noise_density: 0.000244
+    gyro_random_walk: 0.000019393
+    accel_noise_density: 0.001862
+    accel_random_walk: 0.003
+    calibration_frequency: 200.0
+
+    # Visualization
     enable_slam_visualization: true
     enable_landmarks_view: true
     enable_observations_view: true
+    path_max_size: 200
+
+    # Debug
+    verbosity: 5
+    enable_debug_mode: false
+    debug_dump_path: '/tmp/cuvslam'
