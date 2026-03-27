@@ -41,8 +41,8 @@ enable_accel: false
 enable_color: true
 enable_depth: true
 enable_gyro: false
-enable_infra1: false
-enable_infra2: false
+enable_infra1: true
+enable_infra2: true
 
 pointcloud:
   enable: false
