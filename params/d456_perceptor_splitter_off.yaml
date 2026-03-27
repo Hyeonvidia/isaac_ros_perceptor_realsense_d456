@@ -1,0 +1,54 @@
+# D456 Perceptor config — splitter OFF (30fps IR with dot pattern, for high-speed 80km/h)
+# Used by: ./run_deploy.sh use_splitter:=False
+
+nvblox_config:
+  container_name: 'nvblox_container'
+  attach_to_container: true
+  node_name: 'nvblox_node'
+  remappings:
+    - depth:
+        image: '/camera0/depth/image_rect_raw'
+        info: '/camera0/depth/camera_info'
+      color:
+        image: '/camera0/color/image_raw'
+        info: '/camera0/color/camera_info'
+  config_files:
+    - package: 'isaac_ros_perceptor_realsense_d456'
+      path: 'params/default_nvblox_config.yaml'
+    - package: 'isaac_ros_perceptor_realsense_d456'
+      path: 'config/nvblox/nvblox_d456.yaml'
+  parameters:
+    - integrate_depth_rate_hz: 30.0
+    - use_lidar: false
+    - input_qos: "SENSOR_DATA"
+
+cuvslam_config:
+  container_name: 'nvblox_container'
+  attach_to_container: true
+  node_name: 'visual_slam_node'
+  remappings:
+    stereo_images:
+      - left:
+          image: '/camera0/infra1/image_rect_raw'
+          info: '/camera0/infra1/camera_info'
+          optical_frame: 'camera0_infra1_optical_frame'
+        right:
+          image: '/camera0/infra2/image_rect_raw'
+          info: '/camera0/infra2/camera_info'
+          optical_frame: 'camera0_infra2_optical_frame'
+  config_files:
+    - package: 'isaac_ros_perceptor_realsense_d456'
+      path: 'params/default_cuvslam_config.yaml'
+  parameters:
+    - image_jitter_threshold_ms: 34.0
+    - enable_image_denoising: true
+    - enable_imu_fusion: false
+    - enable_ground_constraint_in_odometry: false
+
+common_config:
+  map_frame: 'map'
+  odom_frame: 'odom'
+  robot_frame: 'camera0_link'
+
+extra_topics:
+  - '/tf_static'

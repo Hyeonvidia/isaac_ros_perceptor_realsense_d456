@@ -5,7 +5,7 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 
-install(DIRECTORY config launch
+install(DIRECTORY config launch params
   DESTINATION share/${PROJECT_NAME})
 
 ament_package()
