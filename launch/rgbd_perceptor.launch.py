@@ -38,10 +38,14 @@ def get_nvblox_remappings(cameras: dict) -> List[Tuple[str, str]]:
     for i in range(len(cameras)):
         depth = cameras[i].get('depth')
         color = cameras[i].get('color')
+        mask = cameras[i].get('mask')
         remappings.append((f'camera_{i}/depth/image', depth.get('image')))
         remappings.append((f'camera_{i}/depth/camera_info', depth.get('info')))
         remappings.append((f'camera_{i}/color/image', color.get('image')))
         remappings.append((f'camera_{i}/color/camera_info', color.get('info')))
+        if mask:
+            remappings.append((f'camera_{i}/mask/image', mask.get('image')))
+            remappings.append((f'camera_{i}/mask/camera_info', mask.get('info')))
     return remappings
 
 

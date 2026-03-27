@@ -1,5 +1,5 @@
-# D456 Perceptor config — splitter OFF (30fps IR with dot pattern, for high-speed 80km/h)
-# Used by: ./run_deploy.sh use_splitter:=False
+# D456 Perceptor config — dynamic mode + splitter ON (15fps clean IR)
+# Used by: ./run_deploy.sh mode:=dynamic
 
 nvblox_config:
   container_name: 'nvblox_container'
@@ -7,7 +7,7 @@ nvblox_config:
   node_name: 'nvblox_node'
   remappings:
     - depth:
-        image: '/camera0/depth/image_rect_raw'
+        image: '/camera0/realsense_splitter_node/output/depth'
         info: '/camera0/depth/camera_info'
       color:
         image: '/camera0/color/image_raw'
@@ -15,10 +15,12 @@ nvblox_config:
   config_files:
     - package: 'isaac_ros_perceptor_realsense_d456'
       path: 'params/default_nvblox_config.yaml'
+    - package: 'nvblox_examples_bringup'
+      path: 'config/nvblox/specializations/nvblox_dynamics.yaml'
     - package: 'isaac_ros_perceptor_realsense_d456'
       path: 'config/nvblox/nvblox_d456.yaml'
   parameters:
-    - integrate_depth_rate_hz: 30.0
+    - integrate_depth_rate_hz: 15.0
     - use_lidar: false
     - input_qos: "SENSOR_DATA"
 
@@ -29,19 +31,19 @@ cuvslam_config:
   remappings:
     stereo_images:
       - left:
-          image: '/camera0/infra1/image_rect_raw'
+          image: '/camera0/realsense_splitter_node/output/infra_1'
           info: '/camera0/infra1/camera_info'
           optical_frame: 'camera0_infra1_optical_frame'
         right:
-          image: '/camera0/infra2/image_rect_raw'
+          image: '/camera0/realsense_splitter_node/output/infra_2'
           info: '/camera0/infra2/camera_info'
           optical_frame: 'camera0_infra2_optical_frame'
   config_files:
     - package: 'isaac_ros_perceptor_realsense_d456'
       path: 'params/default_cuvslam_config.yaml'
   parameters:
-    - image_jitter_threshold_ms: 40.0
-    - enable_image_denoising: true
+    - image_jitter_threshold_ms: 100.0
+    - enable_image_denoising: false
     - enable_imu_fusion: false
     - enable_ground_constraint_in_odometry: false
 

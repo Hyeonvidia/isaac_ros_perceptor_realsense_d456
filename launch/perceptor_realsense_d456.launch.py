@@ -47,8 +47,8 @@ RVIZ_CONFIG = lu.get_path(
 CONFIG_MAP = {
     ('static', True):               'params/d456_perceptor_splitter_on.yaml',
     ('static', False):              'params/d456_perceptor_splitter_off.yaml',
-    ('dynamic', True):              'params/d456_perceptor_splitter_on.yaml',
-    ('dynamic', False):             'params/d456_perceptor_splitter_off.yaml',
+    ('dynamic', True):              'params/d456_perceptor_dynamic_splitter_on.yaml',
+    ('dynamic', False):             'params/d456_perceptor_dynamic_splitter_off.yaml',
     ('people_detection', True):     'params/d456_perceptor_people_detection.yaml',
     ('people_detection', False):    'params/d456_perceptor_people_detection.yaml',
     ('people_segmentation', True):  'params/d456_perceptor_people_segmentation.yaml',

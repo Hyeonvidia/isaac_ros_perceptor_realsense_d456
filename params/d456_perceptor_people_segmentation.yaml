@@ -12,6 +12,9 @@ nvblox_config:
       color:
         image: '/camera0/segmentation/image_resized'
         info: '/camera0/segmentation/camera_info_resized'
+      mask:
+        image: '/camera0/segmentation/people_mask'
+        info: '/camera0/segmentation/camera_info_resized'
   config_files:
     - package: 'isaac_ros_perceptor_realsense_d456'
       path: 'params/default_nvblox_config.yaml'
