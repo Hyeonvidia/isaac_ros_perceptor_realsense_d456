@@ -39,9 +39,14 @@ from nvblox_ros_python_utils.nvblox_launch_utils import NvbloxMode, NvbloxPeople
 
 CONTAINER_NAME = 'nvblox_container'
 
-RVIZ_CONFIG = lu.get_path(
-    'isaac_ros_perceptor_realsense_d456',
-    'config/rviz/perceptor_realsense_d456.rviz')
+# Mode → RViz config mapping
+RVIZ_CONFIG_MAP = {
+    'static':               'config/rviz/static.rviz',
+    'dynamic':              'config/rviz/dynamic.rviz',
+    'people_detection':     'config/rviz/detect.rviz',
+    'people_segmentation':  'config/rviz/segment.rviz',
+}
+# 'fast' is dynamic + ground_constraint; handled separately in generate_launch_description
 
 # YAML config map: (mode, use_splitter) → config file path
 CONFIG_MAP = {
@@ -141,6 +146,20 @@ def add_perception(args: lu.ArgumentContainer) -> List[Action]:
                 'one_container_per_camera': 'True',
             })]))
 
+    # --- RViz2 (mode-specific config) ---
+    if lu.is_true(args.run_rviz):
+        mode_str = str(mode)
+        if mode_str == 'dynamic' and lu.is_true(args.enable_ground_constraint):
+            rviz_file = 'config/rviz/fast.rviz'
+        else:
+            rviz_file = RVIZ_CONFIG_MAP.get(mode_str, 'config/rviz/static.rviz')
+        rviz_config = lu.get_path('isaac_ros_perceptor_realsense_d456', rviz_file)
+        actions.append(lu.log_info(f"RViz config: {rviz_file}"))
+        actions.append(Node(
+            package='rviz2', executable='rviz2',
+            arguments=['-d', str(rviz_config)],
+            output='screen'))
+
     return actions
 
 
@@ -198,12 +217,5 @@ def generate_launch_description() -> LaunchDescription:
         bag_path=args.rosbag,
         additional_bag_play_args=args.rosbag_args,
         condition=IfCondition(lu.is_valid(args.rosbag))))
-
-    # RViz2
-    actions.append(Node(
-        package='rviz2', executable='rviz2',
-        arguments=['-d', str(RVIZ_CONFIG)],
-        output='screen',
-        condition=IfCondition(args.run_rviz)))
 
     return LaunchDescription(actions)
